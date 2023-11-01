@@ -1,16 +1,37 @@
-# This is a sample Python script.
+from selenium import webdriver
+from selenium.common import TimeoutException
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from time import sleep
 
-# Press Maj+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+account = input("Enter a valid e-mail: ")
+service = Service(executable_path='./chromedriver.exe')
+options = webdriver.ChromeOptions()
+driver = webdriver.Chrome(service=service, options=options)
+driver.get('https://haveibeenpwned.com/')
 
+search_bar = driver.find_element("id", "Account")
+search_bar.send_keys(account)
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+search_button = driver.find_element("id", "searchPwnage")
+search_button.click()
+sleep(3)
 
+try:
+    wait = WebDriverWait(driver, 5)  # Attendre jusqu'à 5 secondes
+    data = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "pwnedCompanyTitle")))
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+    description = data.find_element(By.XPATH, "./following-sibling::*")
+    compromised = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "dataClasses")))
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    print("Oh no — pwned!")
+    print(description.text)
+    print(compromised.text)
+
+except TimeoutException as t:
+    print(t)
+    print("Good news — no pwnage found!")
+except Exception as e:
+    print(e)
