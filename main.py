@@ -7,7 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 
 account = input("Enter a valid e-mail: ")
-service = Service(executable_path='./chromedriver.exe')
+service = Service(executable_path='.\chromedriver.exe')
 options = webdriver.ChromeOptions()
 driver = webdriver.Chrome(service=service, options=options)
 driver.get('https://haveibeenpwned.com/')
